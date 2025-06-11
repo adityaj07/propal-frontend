@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import { Separator } from "@/components/ui/separator";
-import { Instrument_Serif } from "next/font/google";
 
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
