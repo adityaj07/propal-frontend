@@ -23,6 +23,8 @@ A modern authentication + dashboard web app built with **Next.js App Router**, *
 
 ![App Screenshot](./public/screenshot.png)
 ![App Screenshot](./public/screenshot1.png)
+![App Screenshot](./public/screenshot2.png)
+![App Screenshot](./public/screenshot3.png)
 
 ---
 
