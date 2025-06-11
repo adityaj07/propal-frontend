@@ -28,19 +28,26 @@ interface User {
   phone?: string;
 }
 
+interface UserWithoutPassword {
+  username: string;
+  email: string;
+  phone?: string;
+}
+
 interface AuthContextType {
-  user: User | null;
+  user: UserWithoutPassword | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (userData: User) => Promise<boolean>;
   logout: () => void;
   logoutWithConfirmation: () => Promise<boolean>;
+  updateUser: (userData: UserWithoutPassword) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserWithoutPassword | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
@@ -85,8 +92,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (isPasswordValid) {
           // Don't store password in auth state
-          const { password: _, ...userWithoutPassword } = foundUser;
-          setUser(userWithoutPassword as User);
+          const { ...userWithoutPassword } = foundUser;
+          setUser(userWithoutPassword as UserWithoutPassword);
           localStorage.setItem("authUser", JSON.stringify(userWithoutPassword));
           toast.success("Login successful! Welcome back.");
           return true;
@@ -133,6 +140,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const updateUser = (userData: UserWithoutPassword) => {
+    setUser(userData);
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem("authUser");
@@ -164,6 +175,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signup,
         logout,
         logoutWithConfirmation,
+        updateUser,
       }}
     >
       {children}

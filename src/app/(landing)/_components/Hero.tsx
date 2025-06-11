@@ -5,9 +5,7 @@ import { SparkleIcon } from "lucide-react";
 import Link from "next/link";
 import Arrow from "./ui/Arrow";
 
-interface HeroProps {}
-
-const Hero: FC<HeroProps> = ({}) => {
+const Hero: FC = ({}) => {
   return (
     <section
       id="#Hero"

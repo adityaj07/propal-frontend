@@ -3,9 +3,7 @@ import { ModeToggle } from "@/components/ModeToggle";
 import Link from "next/link";
 import { FC } from "react";
 
-interface NavbarProps {}
-
-const Navbar: FC<NavbarProps> = ({}) => {
+const Navbar: FC = ({}) => {
   return (
     <div className="flex justify-between items-center font-main">
       <nav className="flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">

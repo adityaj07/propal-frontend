@@ -1,12 +1,13 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { AlertCircle, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2, AlertCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,9 +25,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
+import { cn } from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Enter a valid email" }),
@@ -66,6 +66,7 @@ export function LoginForm({
         setError("Login failed. Please check your credentials and try again.");
       }
     } catch (err) {
+      console.log(err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -76,8 +77,10 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
+          <CardTitle className="font-main text-3xl">
+            Login to your account
+          </CardTitle>
+          <CardDescription className="font-main">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
@@ -99,7 +102,7 @@ export function LoginForm({
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="font-main text-xl">Email</FormLabel>
                     <FormControl>
                       <Input
                         type="email"
@@ -119,10 +122,12 @@ export function LoginForm({
                 render={({ field }) => (
                   <FormItem>
                     <div className="flex items-center justify-between">
-                      <FormLabel>Password</FormLabel>
+                      <FormLabel className="font-main text-xl">
+                        Password
+                      </FormLabel>
                       <a
                         href="#"
-                        className="text-sm text-muted-foreground hover:underline"
+                        className="text-sm text-muted-foreground hover:underline font-main"
                       >
                         Forgot your password?
                       </a>
@@ -136,19 +141,15 @@ export function LoginForm({
               />
 
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="font-main text-xl w-full"
+                  disabled={isLoading}
+                >
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   {isLoading ? "Signing in..." : "Login"}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  disabled={isLoading}
-                >
-                  Login with Google
                 </Button>
               </div>
             </form>

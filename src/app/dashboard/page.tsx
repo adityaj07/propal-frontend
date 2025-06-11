@@ -1,19 +1,17 @@
 "use client";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { ModeToggle } from "@/components/ModeToggle";
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { EmptyState } from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -21,16 +19,16 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
-import { Activity, LogOut, Mail, Phone, User, Users } from "lucide-react";
+import { LogOut, Mail, Phone, User } from "lucide-react";
 import { useState } from "react";
 
 export default function Page() {
-  const { user, logoutWithConfirmation } = useAuth();
+  const { user, logout } = useAuth();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogout = () => {
     setShowLogoutDialog(false);
-    await logoutWithConfirmation();
+    logout();
   };
 
   if (!user) {
@@ -50,17 +48,13 @@ export default function Page() {
             />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Dashboard</BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Overview</BreadcrumbPage>
+                  <BreadcrumbPage>Dashboard</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
-          <div className="ml-auto px-4">
+          <div className="ml-auto px-4 flex justify-between items-center gap-2">
             <Button
               onClick={() => setShowLogoutDialog(true)}
               variant="outline"
@@ -69,124 +63,85 @@ export default function Page() {
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
+            <ModeToggle />
           </div>
         </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {/* Welcome Section */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+
+        <div className="flex flex-1 flex-col gap-6 p-6">
+          {/* Welcome Header */}
+          <div className="space-y-2">
+            <h1 className=" font-bold tracking-tight font-main text-5xl">
+              Welcome back, {user.username}!
+            </h1>
+            <p className="text-muted-foreground">
+              Here&apos;s your account overview
+            </p>
+          </div>
+
+          {/* User Info Cards */}
+          <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Welcome Back
+                <CardTitle className="text-lg font-medium font-main">
+                  Username
                 </CardTitle>
                 <User className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {user.username || "Anonymous User"}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Good to see you again
-                </p>
+                <div className="text-2xl font-bold">{user.username}</div>
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Email</CardTitle>
+                <CardTitle className="text-lg font-medium font-main">
+                  Email
+                </CardTitle>
                 <Mail className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg font-medium truncate">
-                  {user.email || "No email provided"}
-                </div>
-                <p className="text-xs text-muted-foreground">Primary contact</p>
+                <div className="text-lg font-medium truncate">{user.email}</div>
               </CardContent>
             </Card>
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Phone</CardTitle>
+                <CardTitle className="text-lg font-medium font-main">
+                  Phone
+                </CardTitle>
                 <Phone className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
                 <div className="text-lg font-medium">
                   {user.phone || "Not provided"}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {user.phone ? "Contact number" : "Add your phone number"}
-                </p>
+                {!user.phone && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Add phone in profile settings
+                  </p>
+                )}
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Account Status
-                </CardTitle>
-                <Badge variant="secondary" className="h-4 px-2 text-xs">
+          </div>
+
+          {/* Account Status */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 font-main text-xl">
+                Account Status
+                <Badge
+                  variant="outline"
+                  className="bg-green-50 text-green-700 border-green-200"
+                >
                   Active
                 </Badge>
-              </CardHeader>
-              <CardContent>
-                <div className="text-lg font-medium text-green-600">
-                  Verified
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Account is active
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Main Content Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="md:col-span-1">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full" variant="outline">
-                  Edit Profile
-                </Button>
-                <Button className="w-full" variant="outline">
-                  Account Settings
-                </Button>
-                <Button className="w-full" variant="outline">
-                  Help & Support
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="md:col-span-1 lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {/* Show empty state if no activity */}
-                <EmptyState
-                  icon={Activity}
-                  title="No recent activity"
-                  description="Your recent activities will appear here as you use the application."
-                  className="border-0 shadow-none"
-                />
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Large Content Area */}
-          <Card className="flex-1">
-            <CardHeader>
-              <CardTitle>Main Content Area</CardTitle>
+              </CardTitle>
             </CardHeader>
-            <CardContent className="min-h-[400px]">
-              <EmptyState
-                icon={Users}
-                title="Welcome to Propal"
-                description="This is your main dashboard content area. Add your application features here to get started."
-                action={{
-                  label: "Get Started",
-                  onClick: () => console.log("Getting started..."),
-                }}
-                className="border-0 shadow-none h-full"
-              />
+            <CardContent>
+              <p className="text-muted-foreground">
+                Your account is active and ready to use. Use the sidebar to
+                navigate to different sections.
+              </p>
             </CardContent>
           </Card>
         </div>

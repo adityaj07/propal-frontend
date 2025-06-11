@@ -44,52 +44,29 @@ const data = {
       title: "Dashboard",
       url: "/dashboard",
       icon: Home,
-      isActive: true,
+      isActive: false,
+      // No items property means it's a direct link
     },
     {
       title: "Profile",
       url: "/dashboard/profile",
       icon: User,
-      items: [
-        {
-          title: "Account Settings",
-          url: "/dashboard/profile/settings",
-        },
-        {
-          title: "Security",
-          url: "/dashboard/profile/security",
-        },
-        {
-          title: "Preferences",
-          url: "/dashboard/profile/preferences",
-        },
-      ],
+      isActive: false,
+      // No items property means it's a direct link
     },
     {
       title: "Agent",
       url: "/dashboard/agent",
       icon: Bot,
-      items: [
-        {
-          title: "Chat Interface",
-          url: "/dashboard/agent/chat",
-        },
-        {
-          title: "Training Data",
-          url: "/dashboard/agent/training",
-        },
-        {
-          title: "Analytics",
-          url: "/dashboard/agent/analytics",
-        },
-      ],
+      isActive: false,
+      // No items property means it's a direct link
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
-  const pathname = usePathname(); // Add this import: import { usePathname } from "next/navigation";
+  const pathname = usePathname();
 
   // Helper function to determine if a nav item is active
   const isNavItemActive = (url: string) => {

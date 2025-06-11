@@ -303,10 +303,11 @@ export default function AgentPage() {
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="mb-4">
+          <div className="mb-4 mt-4">
             <div className="flex items-center gap-3 mb-2">
-              <Bot className="h-8 w-8" />
-              <h1 className="text-3xl font-bold">Agent Configuration</h1>
+              <h1 className="text-5xl font-bold font-main">
+                Agent Configuration
+              </h1>
             </div>
             <p className="text-muted-foreground">
               Configure your speech-to-text settings for optimal performance
@@ -324,7 +325,7 @@ export default function AgentPage() {
             {/* Configuration Panel */}
             <Card className="transition-all duration-300 hover:shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 font-main text-lg">
                   <Settings className="h-5 w-5" />
                   STT Configuration
                 </CardTitle>
@@ -472,7 +473,7 @@ export default function AgentPage() {
             {/* Summary Card */}
             <Card className="transition-all duration-300 hover:shadow-lg">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 font-main text-lg">
                   <CheckCircle className="h-5 w-5" />
                   Configuration Summary
                 </CardTitle>

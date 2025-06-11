@@ -51,6 +51,20 @@ import {
 import { hashPassword, useAuth, verifyPassword } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
+// Define proper types for stored user data
+interface StoredUser {
+  username: string;
+  email: string;
+  password: string;
+  phone?: string;
+}
+
+interface UserWithoutPassword {
+  username: string;
+  email: string;
+  phone?: string;
+}
+
 const profileSchema = z
   .object({
     username: z
@@ -98,7 +112,7 @@ const profileSchema = z
 type ProfileSchemaType = z.infer<typeof profileSchema>;
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -123,8 +137,12 @@ export default function ProfilePage() {
     setSuccess(false);
 
     try {
-      const users = JSON.parse(localStorage.getItem("users") || "[]");
-      const userIndex = users.findIndex((u: any) => u.email === user.email);
+      const users: StoredUser[] = JSON.parse(
+        localStorage.getItem("users") || "[]"
+      );
+      const userIndex = users.findIndex(
+        (u: StoredUser) => u.email === user.email
+      );
 
       if (userIndex === -1) {
         setError("User not found. Please try logging in again.");
@@ -149,7 +167,7 @@ export default function ProfilePage() {
       // Check if email is being changed and if it's already taken
       if (data.email !== user.email) {
         const emailExists = users.some(
-          (u: any, index: number) =>
+          (u: StoredUser, index: number) =>
             u.email === data.email && index !== userIndex
         );
         if (emailExists) {
@@ -159,7 +177,7 @@ export default function ProfilePage() {
       }
 
       // Update user data
-      const updatedUser = {
+      const updatedUser: StoredUser = {
         ...currentUser,
         username: data.username,
         email: data.email,
@@ -176,11 +194,11 @@ export default function ProfilePage() {
       localStorage.setItem("users", JSON.stringify(users));
 
       // Update auth user (without password)
-      const { password: _, ...userWithoutPassword } = updatedUser;
+      const { ...userWithoutPassword } = updatedUser;
       localStorage.setItem("authUser", JSON.stringify(userWithoutPassword));
 
       // Update the auth context user state
-      // You might need to add an updateUser function to your auth context
+      updateUser(userWithoutPassword as UserWithoutPassword);
 
       // Reset password fields
       form.setValue("currentPassword", "");
@@ -193,6 +211,7 @@ export default function ProfilePage() {
       // Auto-hide success message
       setTimeout(() => setSuccess(false), 3000);
     } catch (err) {
+      console.log(err);
       setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -229,8 +248,8 @@ export default function ProfilePage() {
         </header>
 
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="mb-4">
-            <h1 className="text-3xl font-bold">Profile Settings</h1>
+          <div className="mb-4 mt-4">
+            <h1 className="text-5xl font-bold font-main">Profile Settings</h1>
             <p className="text-muted-foreground">
               Manage your account information and security settings
             </p>
@@ -240,7 +259,7 @@ export default function ProfilePage() {
             {/* Profile Overview Card */}
             <Card className="md:col-span-1">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2">
+                <CardTitle className="flex items-center gap-2 font-main text-lg">
                   <User className="h-5 w-5" />
                   Current Profile
                 </CardTitle>
@@ -274,11 +293,14 @@ export default function ProfilePage() {
             {/* Edit Profile Form */}
             <Card className="md:col-span-2">
               <CardHeader>
-                <CardTitle>Edit Profile</CardTitle>
+                <CardTitle className="font-main text-2xl font-bold">
+                  Edit Profile
+                </CardTitle>
                 <CardDescription>
                   Update your account information and change your password
                 </CardDescription>
               </CardHeader>
+              <Separator />
               <CardContent>
                 {error && (
                   <Alert variant="destructive" className="mb-6">
@@ -303,7 +325,9 @@ export default function ProfilePage() {
                   >
                     {/* Basic Information */}
                     <div className="space-y-4">
-                      <h3 className="text-lg font-medium">Basic Information</h3>
+                      <h3 className="text-xl font-medium font-main">
+                        Basic Information
+                      </h3>
 
                       <FormField
                         control={form.control}
@@ -366,11 +390,13 @@ export default function ProfilePage() {
                     <div className="space-y-4 pt-6 border-t">
                       <div className="flex items-center gap-2">
                         <Lock className="h-5 w-5" />
-                        <h3 className="text-lg font-medium">Change Password</h3>
+                        <h3 className="text-xl font-medium font-main">
+                          Change Password
+                        </h3>
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        Leave password fields empty if you don't want to change
-                        your password
+                        Leave password fields empty if you don&apos;t want to
+                        change your password
                       </p>
 
                       <FormField
