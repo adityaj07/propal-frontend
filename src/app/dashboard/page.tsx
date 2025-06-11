@@ -1,6 +1,7 @@
 "use client";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -9,6 +10,10 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Separator } from "@/components/ui/separator";
 import {
   SidebarInset,
@@ -16,13 +21,17 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { User, Mail, Phone, LogOut } from "lucide-react";
+import { Activity, LogOut, Mail, Phone, User, Users } from "lucide-react";
+import { useState } from "react";
 
 export default function Page() {
-  const { user, logout } = useAuth();
+  const { user, logoutWithConfirmation } = useAuth();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  const handleLogout = async () => {
+    setShowLogoutDialog(false);
+    await logoutWithConfirmation();
+  };
 
   if (!user) {
     return null; // ProtectedRoute will handle redirection
@@ -52,7 +61,11 @@ export default function Page() {
             </Breadcrumb>
           </div>
           <div className="ml-auto px-4">
-            <Button onClick={logout} variant="outline" size="sm">
+            <Button
+              onClick={() => setShowLogoutDialog(true)}
+              variant="outline"
+              size="sm"
+            >
               <LogOut className="mr-2 h-4 w-4" />
               Logout
             </Button>
@@ -69,7 +82,9 @@ export default function Page() {
                 <User className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{user.username}</div>
+                <div className="text-2xl font-bold">
+                  {user.username || "Anonymous User"}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Good to see you again
                 </p>
@@ -81,24 +96,26 @@ export default function Page() {
                 <Mail className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-lg font-medium truncate">{user.email}</div>
+                <div className="text-lg font-medium truncate">
+                  {user.email || "No email provided"}
+                </div>
                 <p className="text-xs text-muted-foreground">Primary contact</p>
               </CardContent>
             </Card>
-            {user.phone && (
-              <Card>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Phone</CardTitle>
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-lg font-medium">{user.phone}</div>
-                  <p className="text-xs text-muted-foreground">
-                    Contact number
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Phone</CardTitle>
+                <Phone className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-lg font-medium">
+                  {user.phone || "Not provided"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {user.phone ? "Contact number" : "Add your phone number"}
+                </p>
+              </CardContent>
+            </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -143,30 +160,13 @@ export default function Page() {
                 <CardTitle>Recent Activity</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center space-x-4">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        Account created successfully
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Your account has been set up and is ready to use
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-medium leading-none">
-                        Logged in successfully
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        Welcome to your dashboard
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                {/* Show empty state if no activity */}
+                <EmptyState
+                  icon={Activity}
+                  title="No recent activity"
+                  description="Your recent activities will appear here as you use the application."
+                  className="border-0 shadow-none"
+                />
               </CardContent>
             </Card>
           </div>
@@ -176,17 +176,32 @@ export default function Page() {
             <CardHeader>
               <CardTitle>Main Content Area</CardTitle>
             </CardHeader>
-            <CardContent className="min-h-[400px] flex items-center justify-center">
-              <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold">Welcome to Propal</h3>
-                <p className="text-muted-foreground">
-                  This is your main dashboard content area. Add your application
-                  features here.
-                </p>
-              </div>
+            <CardContent className="min-h-[400px]">
+              <EmptyState
+                icon={Users}
+                title="Welcome to Propal"
+                description="This is your main dashboard content area. Add your application features here to get started."
+                action={{
+                  label: "Get Started",
+                  onClick: () => console.log("Getting started..."),
+                }}
+                className="border-0 shadow-none h-full"
+              />
             </CardContent>
           </Card>
         </div>
+
+        {/* Logout Confirmation Dialog */}
+        <ConfirmationDialog
+          open={showLogoutDialog}
+          onOpenChange={setShowLogoutDialog}
+          title="Confirm Logout"
+          description="Are you sure you want to logout? You'll need to login again to access your account."
+          confirmText="Logout"
+          cancelText="Stay logged in"
+          variant="destructive"
+          onConfirm={handleLogout}
+        />
       </SidebarInset>
     </SidebarProvider>
   );

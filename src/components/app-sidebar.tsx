@@ -1,19 +1,9 @@
 "use client";
 
-import {
-  BookOpen,
-  Bot,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
-  SquareTerminal,
-} from "lucide-react";
+import { Bot, GalleryVerticalEnd, Home, User } from "lucide-react";
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavProjects } from "@/components/nav-projects";
 import { NavUser } from "@/components/nav-user";
 import { TeamSwitcher } from "@/components/team-switcher";
 import {
@@ -24,8 +14,18 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/auth-context";
+import { usePathname } from "next/navigation";
 
-// This is sample data.
+const getUserInitials = (username?: string, email?: string): string => {
+  if (username && username.length >= 2) {
+    return username.substring(0, 2).toUpperCase();
+  }
+  if (email && email.length >= 2) {
+    return email.substring(0, 2).toUpperCase();
+  }
+  return "GU"; // Guest User
+};
+
 const data = {
   user: {
     name: "shadcn",
@@ -38,133 +38,82 @@ const data = {
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
-    {
-      name: "Acme Corp.",
-      logo: Frame,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: PieChart,
-      plan: "Free",
-    },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: Home,
       isActive: true,
+    },
+    {
+      title: "Profile",
+      url: "/dashboard/profile",
+      icon: User,
       items: [
         {
-          title: "History",
-          url: "#",
+          title: "Account Settings",
+          url: "/dashboard/profile/settings",
         },
         {
-          title: "Starred",
-          url: "#",
+          title: "Security",
+          url: "/dashboard/profile/security",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "Preferences",
+          url: "/dashboard/profile/preferences",
         },
       ],
     },
     {
-      title: "Models",
-      url: "#",
+      title: "Agent",
+      url: "/dashboard/agent",
       icon: Bot,
       items: [
         {
-          title: "Genesis",
-          url: "#",
+          title: "Chat Interface",
+          url: "/dashboard/agent/chat",
         },
         {
-          title: "Explorer",
-          url: "#",
+          title: "Training Data",
+          url: "/dashboard/agent/training",
         },
         {
-          title: "Quantum",
-          url: "#",
+          title: "Analytics",
+          url: "/dashboard/agent/analytics",
         },
       ],
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useAuth();
+  const pathname = usePathname(); // Add this import: import { usePathname } from "next/navigation";
 
-  // Update user data with actual auth user
+  // Helper function to determine if a nav item is active
+  const isNavItemActive = (url: string) => {
+    if (url === "/dashboard") {
+      return pathname === "/dashboard";
+    }
+    return pathname.startsWith(url);
+  };
+
+  // Update navigation items with dynamic active states
+  const navMainWithActiveStates = data.navMain.map((item) => ({
+    ...item,
+    isActive: isNavItemActive(item.url),
+  }));
+
+  // Update user data with actual auth user and proper initials
   const updatedData = {
     ...data,
+    navMain: navMainWithActiveStates,
     user: {
       name: user?.username || "Guest",
       email: user?.email || "guest@example.com",
       avatar: "/avatars/shadcn.jpg",
+      initials: getUserInitials(user?.username, user?.email),
     },
   };
 
@@ -175,7 +124,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={updatedData.navMain} />
-        <NavProjects projects={updatedData.projects} />
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={updatedData.user} />

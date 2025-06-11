@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const hashPassword = async (password: string): Promise<string> => {
+export const hashPassword = async (password: string): Promise<string> => {
   const encoder = new TextEncoder();
   const data = encoder.encode(password);
   const hash = await crypto.subtle.digest("SHA-256", data);
@@ -13,7 +13,7 @@ const hashPassword = async (password: string): Promise<string> => {
     .join("");
 };
 
-const verifyPassword = async (
+export const verifyPassword = async (
   password: string,
   hashedPassword: string
 ): Promise<boolean> => {
@@ -34,6 +34,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   signup: (userData: User) => Promise<boolean>;
   logout: () => void;
+  logoutWithConfirmation: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,6 +66,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
       const users = JSON.parse(localStorage.getItem("users") || "[]");
+
+      // Handle empty users array
+      if (users.length === 0) {
+        toast.error("No accounts found. Please sign up first.");
+        return false;
+      }
 
       // Find user by email first
       const foundUser = users.find((u: User) => u.email === email);
@@ -133,6 +140,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
+  const logoutWithConfirmation = async (): Promise<boolean> => {
+    return new Promise((resolve) => {
+      const confirmed = window.confirm(
+        "Are you sure you want to logout? You'll need to login again to access your account."
+      );
+
+      if (confirmed) {
+        logout();
+        resolve(true);
+      } else {
+        resolve(false);
+      }
+    });
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -141,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         signup,
         logout,
+        logoutWithConfirmation,
       }}
     >
       {children}

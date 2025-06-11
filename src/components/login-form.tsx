@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -43,6 +44,7 @@ export function LoginForm({
   const { login } = useAuth();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -54,11 +56,17 @@ export function LoginForm({
 
   const onSubmit = async (data: LoginSchemaType) => {
     setIsLoading(true);
+    setError(null);
+
     try {
       const success = await login(data.email, data.password);
       if (success) {
         router.push("/dashboard");
+      } else {
+        setError("Login failed. Please check your credentials and try again.");
       }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -74,6 +82,13 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {error && (
+            <Alert variant="destructive" className="mb-6">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          )}
+
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -89,6 +104,7 @@ export function LoginForm({
                       <Input
                         type="email"
                         placeholder="you@example.com"
+                        disabled={isLoading}
                         {...field}
                       />
                     </FormControl>
@@ -112,7 +128,7 @@ export function LoginForm({
                       </a>
                     </div>
                     <FormControl>
-                      <Input type="password" {...field} />
+                      <Input type="password" disabled={isLoading} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -124,9 +140,14 @@ export function LoginForm({
                   {isLoading && (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  Login
+                  {isLoading ? "Signing in..." : "Login"}
                 </Button>
-                <Button type="button" variant="outline" className="w-full">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  disabled={isLoading}
+                >
                   Login with Google
                 </Button>
               </div>
