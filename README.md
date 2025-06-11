@@ -22,6 +22,7 @@ A modern authentication + dashboard web app built with **Next.js App Router**, *
 > _Landing Page + Dashboard Preview_
 
 ![App Screenshot](./public/screenshot.png)
+![App Screenshot](./public/screenshot1.png)
 
 ---
 
@@ -40,7 +41,8 @@ A modern authentication + dashboard web app built with **Next.js App Router**, *
 ## 🚀 Getting Started
 
 ```bash
-git clone https://github.com/your-username/propal-frontend-assignment.git
-cd propal-frontend-assignment
+git clone https://github.com/adityaj07/propal-frontend.git
+cd propal-frontend
 pnpm install
 pnpm dev
+```
