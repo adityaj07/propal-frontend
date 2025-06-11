@@ -1,30 +1,29 @@
-"use client"
+"use client";
 
-import * as React from "react"
 import {
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
   Settings2,
   SquareTerminal,
-} from "lucide-react"
+} from "lucide-react";
+import * as React from "react";
 
-import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
-import { NavUser } from "@/components/nav-user"
-import { TeamSwitcher } from "@/components/team-switcher"
+import { NavMain } from "@/components/nav-main";
+import { NavProjects } from "@/components/nav-projects";
+import { NavUser } from "@/components/nav-user";
+import { TeamSwitcher } from "@/components/team-switcher";
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/auth-context";
 
 // This is sample data.
 const data = {
@@ -35,18 +34,18 @@ const data = {
   },
   teams: [
     {
-      name: "Acme Inc",
+      name: "Propal Inc",
       logo: GalleryVerticalEnd,
       plan: "Enterprise",
     },
     {
       name: "Acme Corp.",
-      logo: AudioWaveform,
+      logo: Frame,
       plan: "Startup",
     },
     {
       name: "Evil Corp.",
-      logo: Command,
+      logo: PieChart,
       plan: "Free",
     },
   ],
@@ -154,22 +153,34 @@ const data = {
       icon: Map,
     },
   ],
-}
+};
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
+
+  // Update user data with actual auth user
+  const updatedData = {
+    ...data,
+    user: {
+      name: user?.username || "Guest",
+      email: user?.email || "guest@example.com",
+      avatar: "/avatars/shadcn.jpg",
+    },
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <TeamSwitcher teams={updatedData.teams} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavMain items={updatedData.navMain} />
+        <NavProjects projects={updatedData.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={updatedData.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

@@ -28,7 +28,7 @@ const Hero: FC<HeroProps> = ({}) => {
       </h3>
       <div className="flex justify-center items-center gap-4 mt-6">
         <Link
-          href="/sign-up"
+          href="/signup"
           className=" hover:shadow-[0_4px_14px_0_#f58123d5] px-8 py-2 bg-[#f87c17] rounded-md text-white font-semibold transition duration-200 ease-linear relative flex gap-2 justify-center items-center"
         >
           <Arrow className="absolute -top-10 w-32 -right-20" />
