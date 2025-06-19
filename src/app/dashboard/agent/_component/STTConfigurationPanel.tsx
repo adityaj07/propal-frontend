@@ -1,11 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Language, Model, Provider, SelectedConfig } from "@/types/stt";
-import { isConfigurationComplete } from "@/utils";
+import { isConfigurationComplete } from "@/utils/sttUtilities";
 import { Settings } from "lucide-react";
-import { ProviderSelector } from "./ProviderSelector";
-import { ModelSelector } from "./ModelSelector";
-import { LanguageSelector } from "./LanguageSelector";
 import { ConfigurationActions } from "./ConfigurationActions";
+import { LanguageSelector } from "./LanguageSelector";
+import { ModelSelector } from "./ModelSelector";
+import { ProviderSelector } from "./ProviderSelector";
 
 interface STTConfigurationPanelProps {
   providers: Provider[];

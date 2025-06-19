@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SelectedConfig } from "@/types/stt";
-import { isConfigurationComplete } from "@/utils";
+import { isConfigurationComplete } from "@/utils/sttUtilities";
 import { Bot, CheckCircle, Cloud, Languages, Mic } from "lucide-react";
 
 interface STTSummaryPanelProps {

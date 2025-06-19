@@ -1,10 +1,14 @@
 import { Language, Model, SelectedConfig, STTConfig } from "@/types/stt";
 import {
+  clearSTTConfig,
+  loadSTTConfig,
+  saveSTTConfig,
+} from "@/utils/sttLocalStorage";
+import {
   findModelByValue,
   findProviderByValue,
   getDisplayNames,
-} from "@/utils";
-import { clearSTTConfig, loadSTTConfig, saveSTTConfig } from "@/utils/stt";
+} from "@/utils/sttUtilities";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -36,7 +40,9 @@ const initialConfig: SelectedConfig = {
   language: "",
 };
 
-export const useSTTConfig = ({ sttConfig }: UseSTTConfigProps) => {
+export const useSTTConfig = ({
+  sttConfig,
+}: UseSTTConfigProps): UseSTTConfigReturn => {
   const [selectedConfig, setSelectedConfig] =
     useState<SelectedConfig>(initialConfig);
   const [availableModels, setAvailableModels] = useState<Model[]>([]);
