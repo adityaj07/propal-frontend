@@ -27,15 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
-
-const loginSchema = z.object({
-  email: z.string().email({ message: "Enter a valid email" }),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
-});
-
-type LoginSchemaType = z.infer<typeof loginSchema>;
+import { loginSchema, LoginSchemaType } from "@/schemas";
 
 export function LoginForm({
   className,
